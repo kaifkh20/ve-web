@@ -1,8 +1,9 @@
-import {Elysia} from "elysia"
+import {Elysia, redirect} from "elysia"
+// import { view } from "../routers/views_router"
 
 const app = new Elysia()
 
-
+// app.use(view)
 
 var info_streams : any 
 
@@ -37,7 +38,10 @@ const Mimetypes : any =  {
 
 app.post("/upload-video",async(ctx)=>{
     const formData : any= ctx.body
+    
     const video_uploaded : Blob = formData.video
+    // console.log(video_uploaded);
+    
     try{
         // console.log(video_uploaded.type);
         let vid_type : string = video_uploaded.type
@@ -50,7 +54,10 @@ app.post("/upload-video",async(ctx)=>{
         vid_details.type_enc = vid_type;
         vid_details.info_streams = info_streams
         
+        // console.log("Uploaded Succesfully")
+        return ctx.redirect("http://localhost:3000/view/options",302)
         return {"status_msg":"Uploaded Succesfully"}
+        // return redirect("view/options")
     }catch(e : any){
         console.error(e)
         return ctx.error("Bad Request")
@@ -58,6 +65,8 @@ app.post("/upload-video",async(ctx)=>{
 })
 
 app.get("/info_video",(ctx)=>{
+    console.log("info sent");
+    
     return {vid_details}
 })
 
@@ -97,6 +106,12 @@ app.post("/convert",async(ctx)=>{
 
         return {"status_msg":"Successfully Done","output_vid":blob_file}
     }
+})
+
+app.get("/",()=>{
+    return (
+        Bun.file("views/index.html")
+    )
 })
 
 app.listen(3000,()=>{
